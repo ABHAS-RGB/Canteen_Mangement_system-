@@ -1,12 +1,11 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Menu from "./pages/Menu";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
-  
   return token ? children : <Navigate to="/login" />;
 }
 
@@ -17,6 +16,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/menu" element={<Menu />} />
         <Route
           path="/dashboard"
           element={
