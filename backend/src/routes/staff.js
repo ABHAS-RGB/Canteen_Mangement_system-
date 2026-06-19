@@ -5,7 +5,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/role');
 
 // GET /api/staff/orders
-// GET /api/staff/orders
 router.get('/orders', authMiddleware, requireRole('staff', 'admin'), async (req, res) => {
   try {
     const [orders] = await db.query(`
@@ -31,5 +30,22 @@ router.get('/orders', authMiddleware, requireRole('staff', 'admin'), async (req,
   }
 });
 
-module.exports = router;
+// PATCH /api/staff/orders/:id/status
+router.patch('/orders/:id/status', authMiddleware, requireRole('staff', 'admin'), async (req, res) => {
+  const { status } = req.body;
+  const valid = ['pending', 'preparing', 'ready', 'delivered'];
 
+  if (!valid.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status' });
+  }
+
+  try {
+    await db.query('UPDATE orders SET status = ? WHERE id = ?', [status, req.params.id]);
+    res.json({ message: 'Status updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update status' });
+  }
+});
+
+module.exports = router;

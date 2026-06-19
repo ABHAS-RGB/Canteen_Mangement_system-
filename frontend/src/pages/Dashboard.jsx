@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  
+  {user.role === 'staff' || user.role === 'admin' ? (
+  <p><Link to="/staff/orders">Staff: Manage Orders</Link></p>
+) : null}
   return (
     <div style={{ maxWidth: 600, margin: "40px auto" }}>
       <h2>Dashboard</h2>

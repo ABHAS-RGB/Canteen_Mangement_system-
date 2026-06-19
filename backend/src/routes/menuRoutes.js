@@ -1,4 +1,6 @@
 const express = require("express");
+const router = express.Router();
+
 const {
   getAllMenuItems,
   createMenuItem,
@@ -6,11 +8,15 @@ const {
   deleteMenuItem
 } = require("../controllers/menuController");
 
-const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
+const requireRole = require("../middleware/role");
 
-router.get("/", getAllMenuItems);
-router.post("/", createMenuItem);
-router.put("/:id", updateMenuItem);
-router.delete("/:id", deleteMenuItem);
+// GET — anyone logged in can browse the menu
+router.get("/", authMiddleware, getAllMenuItems);
+
+// POST/PUT/DELETE — admin only
+router.post("/", authMiddleware, requireRole("admin"), createMenuItem);
+router.put("/:id", authMiddleware, requireRole("admin"), updateMenuItem);
+router.delete("/:id", authMiddleware, requireRole("admin"), deleteMenuItem);
 
 module.exports = router;
