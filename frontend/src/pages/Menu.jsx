@@ -6,6 +6,9 @@ export default function Menu() {
   const [msg, setMsg] = useState("");
   const [editingId, setEditingId] = useState(null);
 
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -16,7 +19,11 @@ export default function Menu() {
 
   const loadMenu = async () => {
     try {
-      const res = await API.get("/menu");
+      const params = {};
+      if (search) params.search = search;
+      if (category) params.category = category;
+
+      const res = await API.get("/menu", { params });
       setItems(res.data);
     } catch {
       setMsg("Failed to load menu");
@@ -25,7 +32,7 @@ export default function Menu() {
 
   useEffect(() => {
     loadMenu();
-  }, []);
+  }, [search, category]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -103,6 +110,26 @@ export default function Menu() {
 
       {msg && <p>{msg}</p>}
 
+      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+        <input
+          placeholder="Search by name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ flex: 1, padding: 6 }}
+        />
+        <input
+          placeholder="Filter by category..."
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          style={{ flex: 1, padding: 6 }}
+        />
+        {(search || category) && (
+          <button type="button" onClick={() => { setSearch(""); setCategory(""); }}>
+            Clear
+          </button>
+        )}
+      </div>
+
       <h3>All Menu Items</h3>
       <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
@@ -111,19 +138,23 @@ export default function Menu() {
           </tr>
         </thead>
         <tbody>
-          {items.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.name}</td>
-              <td>{item.category}</td>
-              <td>₹{item.price}</td>
-              <td>{item.is_available ? "Yes" : "No"}</td>
-              <td>
-                <button onClick={() => handleEdit(item)}>Edit</button>
-                <button onClick={() => handleDelete(item.id)} style={{ marginLeft: 8 }}>Delete</button>
-              </td>
-            </tr>
-          ))}
+          {items.length === 0 ? (
+            <tr><td colSpan="6" style={{ textAlign: "center" }}>No items found</td></tr>
+          ) : (
+            items.map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.name}</td>
+                <td>{item.category}</td>
+                <td>₹{item.price}</td>
+                <td>{item.is_available ? "Yes" : "No"}</td>
+                <td>
+                  <button onClick={() => handleEdit(item)}>Edit</button>
+                  <button onClick={() => handleDelete(item.id)} style={{ marginLeft: 8 }}>Delete</button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

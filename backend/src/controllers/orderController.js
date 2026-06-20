@@ -1,10 +1,15 @@
 const pool = require("../config/db");
+const { deductFromWallet } = require("./walletController"); // NEW
 
 const placeOrder = async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
     const userId = req.user.id;
+    const { payment_method } = req.body; // NEW — expect "wallet" or "cash" from frontend
+
+    // NEW — basic validation, default to cash if not provided
+    const paymentMethod = payment_method === "wallet" ? "wallet" : "cash";
 
     await connection.beginTransaction();
 
@@ -26,9 +31,10 @@ const placeOrder = async (req, res) => {
       0
     );
 
+    // CHANGED — added payment_method column to the insert
     const [orderResult] = await connection.query(
-      "INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, ?)",
-      [userId, totalAmount, "Pending"]
+      "INSERT INTO orders (user_id, total_amount, payment_method, status) VALUES (?, ?, ?, ?)",
+      [userId, totalAmount, paymentMethod, "Pending"]
     );
 
     const orderId = orderResult.insertId;
@@ -48,18 +54,35 @@ const placeOrder = async (req, res) => {
       [orderItemValues]
     );
 
+    // NEW — if paying by wallet, deduct now, inside this same transaction.
+    // If balance is insufficient, this throws and the catch block below
+    // rolls back the ENTIRE order (no order_items, no order row left behind).
+    let newWalletBalance = null;
+    if (paymentMethod === "wallet") {
+      newWalletBalance = await deductFromWallet(connection, userId, totalAmount, orderId);
+    }
+
     await connection.query("DELETE FROM carts WHERE user_id = ?", [userId]);
 
     await connection.commit();
 
+    // CHANGED — include payment info in the response
     return res.status(201).json({
       message: "Order placed successfully",
       order_id: orderId,
       total_amount: totalAmount,
+      payment_method: paymentMethod,
+      wallet_balance: newWalletBalance, // null if paid by cash
       status: "Pending",
     });
   } catch (error) {
     await connection.rollback();
+
+    // NEW — friendlier message for the specific insufficient-balance case
+    if (error.code === "INSUFFICIENT_BALANCE") {
+      return res.status(400).json({ message: "Insufficient wallet balance. Please top up or pay by cash." });
+    }
+
     return res.status(500).json({ message: "Server error", error: error.message });
   } finally {
     connection.release();
@@ -70,8 +93,9 @@ const getOrderHistory = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    // CHANGED — added payment_method to the SELECT so order history can show it
     const [orders] = await pool.query(
-      `SELECT id, total_amount, status, created_at
+      `SELECT id, total_amount, payment_method, status, created_at
        FROM orders
        WHERE user_id = ?
        ORDER BY created_at DESC`,
@@ -89,8 +113,9 @@ const getOrderDetails = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
 
+    // CHANGED — added payment_method to the SELECT
     const [orders] = await pool.query(
-      `SELECT id, total_amount, status, created_at
+      `SELECT id, total_amount, payment_method, status, created_at
        FROM orders
        WHERE id = ? AND user_id = ?`,
       [id, userId]

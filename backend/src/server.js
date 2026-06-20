@@ -9,3 +9,5 @@ app.listen(PORT, () => {
 });
 const staffRoutes = require('./routes/staff');
 app.use('/api/staff', staffRoutes);
+const walletRoutes = require("./routes/walletRoutes");
+app.use("/api/wallet", walletRoutes);

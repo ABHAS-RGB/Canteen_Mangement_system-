@@ -2,7 +2,24 @@ const pool = require("../config/db");
 
 const getAllMenuItems = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM menu_items ORDER BY id DESC");
+    const { search, category } = req.query;
+
+    let query = "SELECT * FROM menu_items WHERE 1=1";
+    const params = [];
+
+    if (search) {
+      query += " AND name LIKE ?";
+      params.push(`%${search}%`);
+    }
+
+    if (category) {
+      query += " AND category = ?";
+      params.push(category);
+    }
+
+    query += " ORDER BY id DESC";
+
+    const [rows] = await pool.query(query, params);
     return res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Server error", error: error.message });
