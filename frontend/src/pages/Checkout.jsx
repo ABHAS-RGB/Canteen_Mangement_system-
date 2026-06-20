@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
@@ -9,7 +10,6 @@ export default function Checkout() {
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // NEW — payment method state + wallet balance (so we can show it and disable wallet if insufficient)
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [walletBalance, setWalletBalance] = useState(null);
 
@@ -23,20 +23,18 @@ export default function Checkout() {
     }
   };
 
-  // NEW — fetch wallet balance so the student can see it before choosing
   const loadWalletBalance = async () => {
     try {
       const res = await API.get("/wallet/balance");
       setWalletBalance(res.data.balance);
     } catch (err) {
-      // non-fatal — if this fails, just don't show a balance; cash is still available
       setWalletBalance(null);
     }
   };
 
   useEffect(() => {
     loadCart();
-    loadWalletBalance(); // NEW
+    loadWalletBalance();
   }, []);
 
   const placeOrder = async () => {
@@ -44,7 +42,6 @@ export default function Checkout() {
       setLoading(true);
       setMsg("");
 
-      // CHANGED — send payment_method in the request body
       const res = await API.post("/orders/place", { payment_method: paymentMethod });
 
       setMsg(res.data.message || "Order placed successfully");
@@ -61,85 +58,94 @@ export default function Checkout() {
     }
   };
 
-  // NEW — wallet is only a valid choice if balance covers the order total
   const walletInsufficient =
     walletBalance !== null && Number(walletBalance) < Number(total);
 
   return (
-    <div style={{ maxWidth: 900, margin: "30px auto", padding: "0 12px" }}>
-      <h2>Checkout</h2>
-      <p>
-        <Link to="/cart">Back to Cart</Link> | <Link to="/orders">My Orders</Link>
-      </p>
+    <div>
+      <Navbar />
+      <div className="page-container">
+        <h1 className="page-title">Checkout</h1>
+        <p className="page-subtitle">Review your order and choose a payment method</p>
 
-      {msg && <p>{msg}</p>}
+        {msg && <p className="text-success" style={{ marginBottom: 16 }}>{msg}</p>}
 
-      {cart.length === 0 ? (
-        <p>No items available for checkout.</p>
-      ) : (
-        <>
-          <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Qty</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>Rs. {item.price}</td>
-                  <td>{item.quantity}</td>
-                  <td>Rs. {item.item_total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <h3>Grand Total: Rs. {total}</h3>
-
-          {/* NEW — payment method selector */}
-          <div style={{ margin: "16px 0" }}>
-            <p style={{ marginBottom: 8, fontWeight: "bold" }}>Payment Method</p>
-
-            <label style={{ display: "block", marginBottom: 6 }}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="cash"
-                checked={paymentMethod === "cash"}
-                onChange={() => setPaymentMethod("cash")}
-              />
-              {" "}Cash on Pickup
-            </label>
-
-            <label style={{ display: "block", marginBottom: 6 }}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="wallet"
-                checked={paymentMethod === "wallet"}
-                onChange={() => setPaymentMethod("wallet")}
-                disabled={walletInsufficient}
-              />
-              {" "}Pay with Wallet
-              {walletBalance !== null && (
-                <span style={{ marginLeft: 8, color: walletInsufficient ? "red" : "green" }}>
-                  (Balance: Rs. {Number(walletBalance).toFixed(2)}
-                  {walletInsufficient ? " — insufficient" : ""})
-                </span>
-              )}
-            </label>
+        {cart.length === 0 ? (
+          <div className="card">
+            <p className="text-muted">No items available for checkout.</p>
+            <Link to="/menu" className="btn-secondary" style={{ textDecoration: "none", display: "inline-block", marginTop: 12 }}>
+              Browse menu
+            </Link>
           </div>
+        ) : (
+          <>
+            <p className="card-label" style={{ marginBottom: 10 }}>Order summary</p>
+            <table className="canteen-table" style={{ marginBottom: 20 }}>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Price</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td>₹{item.price}</td>
+                    <td>{item.quantity}</td>
+                    <td>₹{item.item_total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          <button onClick={placeOrder} disabled={loading}>
-            {loading ? "Placing Order..." : "Place Order"}
-          </button>
-        </>
-      )}
+            <div className="card">
+              <p className="card-label">Payment method</p>
+
+              <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 0", cursor: "pointer" }}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cash"
+                  checked={paymentMethod === "cash"}
+                  onChange={() => setPaymentMethod("cash")}
+                />
+                Cash on pickup
+              </label>
+
+              <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 0", cursor: walletInsufficient ? "not-allowed" : "pointer" }}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="wallet"
+                  checked={paymentMethod === "wallet"}
+                  onChange={() => setPaymentMethod("wallet")}
+                  disabled={walletInsufficient}
+                />
+                Pay with wallet
+                {walletBalance !== null && (
+                  <span className={walletInsufficient ? "badge badge-danger" : "badge"}>
+                    Balance: ₹{Number(walletBalance).toFixed(2)}
+                    {walletInsufficient ? " — insufficient" : ""}
+                  </span>
+                )}
+              </label>
+            </div>
+
+            <div className="card" style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <p className="card-label">Grand total</p>
+                <p className="card-title">₹{total}</p>
+              </div>
+              <button onClick={placeOrder} disabled={loading} className="btn-primary">
+                {loading ? "Placing order..." : "Place order"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

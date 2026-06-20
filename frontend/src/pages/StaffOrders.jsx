@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -48,6 +49,7 @@ export default function StaffOrders() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '820px', margin: '0 auto' }}>
+      <Navbar />
       <h2>Staff — Order Management</h2>
       {msg && <p style={{ color: 'red' }}>{msg}</p>}
 
@@ -94,7 +96,7 @@ export default function StaffOrders() {
             </div>
 
             <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.5rem' }}>
-            ₹{parseFloat(order.total_amount).toFixed(2)}
+              ₹{parseFloat(order.total_amount).toFixed(2)} —{' '}
               {new Date(order.created_at).toLocaleString()}
             </p>
 

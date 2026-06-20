@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 .counter {
   font-size: 16px;
   padding: 5px 10px;
@@ -181,4 +182,388 @@
     right: 0;
     border-right-color: var(--border);
   }
+}
+/* ============================================
+   Canteen App Design System
+   Soft, card-based UI with sage green accents
+   ============================================ */
+
+:root {
+  --canteen-accent: #4d7c5f;
+  --canteen-accent-light: #e8f0ea;
+  --canteen-accent-dark: #355c43;
+  --canteen-bg: #f7f8f6;
+  --canteen-card-bg: #ffffff;
+  --canteen-border: #e5e7e2;
+  --canteen-text-primary: #1f2421;
+  --canteen-text-secondary: #6b7268;
+  --canteen-text-muted: #9298901;
+  --canteen-danger: #d4524f;
+  --canteen-danger-bg: #fbeceb;
+  --canteen-warning: #c98a2e;
+  --canteen-warning-bg: #fbf2e3;
+  --canteen-radius: 14px;
+  --canteen-radius-sm: 8px;
+  --canteen-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+* {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+/* Page wrapper — use on every page's outermost div instead of ad-hoc maxWidth styles */
+.page-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  background: var(--canteen-bg);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--canteen-text-primary);
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 8px 0 4px;
+  color: var(--canteen-text-primary);
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--canteen-text-secondary);
+  margin: 0 0 24px;
+}
+
+/* Cards */
+.card {
+  background: var(--canteen-card-bg);
+  border: 1px solid var(--canteen-border);
+  border-radius: var(--canteen-radius);
+  padding: 24px;
+  box-shadow: var(--canteen-shadow);
+  margin-bottom: 20px;
+}
+
+.card-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.card-row .card {
+  flex: 1 1 280px;
+  margin-bottom: 0;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--canteen-text-secondary);
+  margin: 0 0 6px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+/* Stat cards (admin dashboard) */
+.stat-card {
+  background: var(--canteen-accent-light);
+  border-radius: var(--canteen-radius-sm);
+  padding: 16px;
+  text-align: center;
+  flex: 1 1 140px;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--canteen-text-secondary);
+  margin: 0;
+}
+
+.stat-card .stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 4px 0 0;
+  color: var(--canteen-accent-dark);
+}
+
+/* Badges / pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--canteen-accent-light);
+  color: var(--canteen-accent-dark);
+}
+
+.badge-warning {
+  background: var(--canteen-warning-bg);
+  color: var(--canteen-warning);
+}
+
+.badge-danger {
+  background: var(--canteen-danger-bg);
+  color: var(--canteen-danger);
+}
+
+.badge-neutral {
+  background: #f0f1ee;
+  color: var(--canteen-text-secondary);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--canteen-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--canteen-radius-sm);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--canteen-accent-dark);
+}
+
+.btn-primary:disabled {
+  background: #b9c2bc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--canteen-text-primary);
+  border: 1px solid var(--canteen-border);
+  border-radius: var(--canteen-radius-sm);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #f7f8f6;
+  border-color: #d3d7d0;
+}
+
+.btn-danger {
+  background: var(--canteen-danger-bg);
+  color: var(--canteen-danger);
+  border: none;
+  border-radius: var(--canteen-radius-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--canteen-border);
+  border-radius: var(--canteen-radius-sm);
+  font-size: 14px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--canteen-accent);
+  box-shadow: 0 0 0 3px var(--canteen-accent-light);
+}
+
+/* Tables */
+.canteen-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--canteen-card-bg);
+  border: 1px solid var(--canteen-border);
+  border-radius: var(--canteen-radius);
+  overflow: hidden;
+}
+
+.canteen-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--canteen-text-secondary);
+  padding: 12px 16px;
+  background: #fafaf8;
+  border-bottom: 1px solid var(--canteen-border);
+}
+
+.canteen-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--canteen-border);
+}
+
+.canteen-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Progress bar */
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--canteen-accent-light);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--canteen-accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Navbar */
+.app-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--canteen-card-bg);
+  border-bottom: 1px solid var(--canteen-border);
+  margin-bottom: 24px;
+}
+
+.app-navbar a {
+  color: var(--canteen-text-primary);
+  text-decoration: none;
+  font-size: 14px;
+  margin-right: 20px;
+  transition: color 0.15s ease;
+}
+
+.app-navbar a:hover {
+  color: var(--canteen-accent);
+}
+
+.app-navbar .brand {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--canteen-accent-dark);
+}
+
+/* Text helpers */
+.text-muted {
+  color: var(--canteen-text-secondary);
+  font-size: 13px;
+}
+
+.text-success {
+  color: var(--canteen-accent-dark);
+}
+
+.text-danger {
+  color: var(--canteen-danger);
+}
+/* ============================================
+   Pill-style horizontal navbar (theme v2)
+   ============================================ */
+
+.app-navbar-v2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--canteen-card-bg);
+  border: 1px solid var(--canteen-border);
+  border-radius: 999px;
+  padding: 8px 12px 8px 20px;
+  margin: 16px auto 24px;
+  max-width: 1000px;
+  box-shadow: var(--canteen-shadow);
+}
+
+.navbar-v2-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navbar-v2-brand {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--canteen-accent-dark);
+  margin-right: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.navbar-v2-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--canteen-text-secondary);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.navbar-v2-link:hover {
+  background: var(--canteen-accent-light);
+  color: var(--canteen-accent-dark);
+}
+
+.navbar-v2-link.active {
+  background: var(--canteen-accent-light);
+  color: var(--canteen-accent-dark);
+  font-weight: 500;
+}
+
+.navbar-v2-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-v2-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--canteen-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.navbar-v2-logout {
+  background: transparent;
+  border: 1px solid var(--canteen-border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--canteen-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navbar-v2-logout:hover {
+  background: var(--canteen-danger-bg);
+  color: var(--canteen-danger);
+  border-color: transparent;
 }

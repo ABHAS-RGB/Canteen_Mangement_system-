@@ -67,10 +67,11 @@ const updateCartItem = async (req, res) => {
       return res.status(400).json({ message: "Quantity must be at least 1" });
     }
 
-    const [result] = await pool.query(
-      "UPDATE carts SET quantity = ? WHERE id = ? AND user_id = ?",
-      [quantity, id, userId]
-    );
+    // updateCartItem
+const [result] = await pool.query(
+  "UPDATE carts SET quantity = ? WHERE id = ? AND user_id = ?",
+  [quantity, id, userId]
+);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Cart item not found" });
     }
@@ -86,10 +87,10 @@ const deleteCartItem = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    const [result] = await pool.query(
-      "DELETE FROM carts WHERE id = ? AND user_id = ?",
-      [id, userId]
-    );
+   const [result] = await pool.query(
+  "DELETE FROM carts WHERE id = ? AND user_id = ?",
+  [id, userId]
+);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Cart item not found" });
     }

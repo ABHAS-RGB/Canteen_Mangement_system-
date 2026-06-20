@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
@@ -31,8 +32,7 @@ export default function Cart() {
 
   const addToCart = async (menuItemId) => {
     try {
-    await API.post("/cart/add", { menu_item_id: menuItemId, quantity: 1 });
-
+      await API.post("/cart/add", { menu_item_id: menuItemId, quantity: 1 });
       setMsg("Added to cart");
       loadCart();
     } catch (err) {
@@ -52,65 +52,93 @@ export default function Cart() {
   };
 
   return (
-    <div style={{ maxWidth: 1000, margin: "30px auto", padding: "0 12px" }}>
-      <h2>Cart Module</h2>
-      <p>
-        <Link to="/menu">Menu</Link> | <Link to="/checkout">Checkout</Link> | <Link to="/orders">My Orders</Link>
-      </p>
-      {msg && <p>{msg}</p>}
+    <div>
+      <Navbar />
+      <div className="page-container">
+        <h1 className="page-title">Cart</h1>
+        <p className="page-subtitle">Browse the menu and build your order</p>
 
-      <h3>Menu</h3>
-      <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20 }}>
-        <thead>
-          <tr>
-            <th>Name</th><th>Category</th><th>Price</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {menu.map((m) => (
-            <tr key={m.id}>
-              <td>{m.name}</td>
-              <td>{m.category}</td>
-              <td>₹{m.price}</td>
-              <td><button onClick={() => addToCart(m.id)}>Add to Cart</button></td>
+        {msg && <p className="text-success" style={{ marginBottom: 16 }}>{msg}</p>}
+
+        <p className="card-label" style={{ marginBottom: 10 }}>Menu</p>
+        <table className="canteen-table" style={{ marginBottom: 24 }}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h3>Your Cart</h3>
-      {cart.length === 0 ? (
-        <p>No items in cart</p>
-      ) : (
-        <>
-          <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th>Item</th><th>Price</th><th>Qty</th><th>Total</th><th>Actions</th>
+          </thead>
+          <tbody>
+            {menu.map((m) => (
+              <tr key={m.id}>
+                <td>{m.name}</td>
+                <td>{m.category}</td>
+                <td>₹{m.price}</td>
+                <td>
+                  <button onClick={() => addToCart(m.id)} className="btn-secondary">
+                    Add to cart
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {cart.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.name}</td>
-                  <td>₹{c.price}</td>
-                  <td>{c.quantity}</td>
-                  <td>₹{c.item_total}</td>
-                  <td>
-                    <button onClick={() => updateQty(c.id, c.quantity + 1)}>+</button>
-                    <button onClick={() => updateQty(c.id, c.quantity - 1)} style={{ marginLeft: 6 }}>-</button>
-                    <button onClick={() => removeItem(c.id)} style={{ marginLeft: 6 }}>Remove</button>
-                  </td>
+            ))}
+          </tbody>
+        </table>
+
+        <p className="card-label" style={{ marginBottom: 10 }}>Your cart</p>
+
+        {cart.length === 0 ? (
+          <div className="card">
+            <p className="text-muted">No items in cart</p>
+          </div>
+        ) : (
+          <>
+            <table className="canteen-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Price</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <h3 style={{ marginTop: 12 }}>Grand Total: Rs. {total}</h3>
-          <Link to="/checkout">
-            <button>Go to Checkout</button>
-          </Link>
-        </>
-      )}
+              </thead>
+              <tbody>
+                {cart.map((c) => (
+                  <tr key={c.id}>
+                    <td>{c.name}</td>
+                    <td>₹{c.price}</td>
+                    <td>{c.quantity}</td>
+                    <td>₹{c.item_total}</td>
+                    <td>
+                      <button onClick={() => updateQty(c.id, c.quantity + 1)} className="btn-secondary" style={{ padding: "6px 12px" }}>
+                        +
+                      </button>
+                      <button onClick={() => updateQty(c.id, c.quantity - 1)} className="btn-secondary" style={{ padding: "6px 12px", marginLeft: 6 }}>
+                        −
+                      </button>
+                      <button onClick={() => removeItem(c.id)} className="btn-danger" style={{ marginLeft: 6 }}>
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="card" style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <p className="card-label">Grand total</p>
+                <p className="card-title">₹{total}</p>
+              </div>
+              <Link to="/checkout" className="btn-primary" style={{ textDecoration: "none" }}>
+                Go to checkout
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

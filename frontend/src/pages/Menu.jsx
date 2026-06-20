@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import API from "../services/api";
 
@@ -88,75 +89,148 @@ export default function Menu() {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "30px auto", padding: "0 12px" }}>
-      <h2>Menu Management</h2>
+    <div>
+      <Navbar />
+      <div className="page-container">
+        <h1 className="page-title">Menu management</h1>
+        <p className="page-subtitle">Add, edit, and manage canteen menu items</p>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
-        <input name="name" placeholder="Item name" value={form.name} onChange={handleChange} required style={{ width: "100%", marginBottom: 8 }} />
-        <input name="description" placeholder="Description" value={form.description} onChange={handleChange} style={{ width: "100%", marginBottom: 8 }} />
-        <input name="price" type="number" placeholder="Price" value={form.price} onChange={handleChange} required style={{ width: "100%", marginBottom: 8 }} />
-        <input name="category" placeholder="Category" value={form.category} onChange={handleChange} style={{ width: "100%", marginBottom: 8 }} />
-        <label style={{ display: "block", marginBottom: 8 }}>
-          <input type="checkbox" name="is_available" checked={form.is_available} onChange={handleChange} /> Available
-        </label>
+        <div className="card">
+          <p className="card-label">{editingId ? "Edit item" : "Add new item"}</p>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <input
+                className="input-field"
+                name="name"
+                placeholder="Item name"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+              <input
+                className="input-field"
+                name="description"
+                placeholder="Description"
+                value={form.description}
+                onChange={handleChange}
+              />
+              <div style={{ display: "flex", gap: 12 }}>
+                <input
+                  className="input-field"
+                  name="price"
+                  type="number"
+                  placeholder="Price"
+                  value={form.price}
+                  onChange={handleChange}
+                  required
+                  style={{ flex: 1 }}
+                />
+                <input
+                  className="input-field"
+                  name="category"
+                  placeholder="Category"
+                  value={form.category}
+                  onChange={handleChange}
+                  style={{ flex: 1 }}
+                />
+              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+                <input
+                  type="checkbox"
+                  name="is_available"
+                  checked={form.is_available}
+                  onChange={handleChange}
+                />
+                Available
+              </label>
 
-        <button type="submit">{editingId ? "Update Item" : "Add Item"}</button>
-        {editingId && (
-          <button type="button" onClick={resetForm} style={{ marginLeft: 8 }}>
-            Cancel
-          </button>
-        )}
-      </form>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button type="submit" className="btn-primary">
+                  {editingId ? "Update item" : "Add item"}
+                </button>
+                {editingId && (
+                  <button type="button" onClick={resetForm} className="btn-secondary">
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+          {msg && <p className="text-success" style={{ marginTop: 12 }}>{msg}</p>}
+        </div>
 
-      {msg && <p>{msg}</p>}
+        <div className="card">
+          <p className="card-label">Filter menu</p>
+          <div style={{ display: "flex", gap: 10 }}>
+            <input
+              className="input-field"
+              placeholder="Search by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            <input
+              className="input-field"
+              placeholder="Filter by category..."
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            {(search || category) && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => { setSearch(""); setCategory(""); }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-        <input
-          placeholder="Search by name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ flex: 1, padding: 6 }}
-        />
-        <input
-          placeholder="Filter by category..."
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          style={{ flex: 1, padding: 6 }}
-        />
-        {(search || category) && (
-          <button type="button" onClick={() => { setSearch(""); setCategory(""); }}>
-            Clear
-          </button>
-        )}
-      </div>
-
-      <h3>All Menu Items</h3>
-      <table border="1" cellPadding="8" style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Available</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length === 0 ? (
-            <tr><td colSpan="6" style={{ textAlign: "center" }}>No items found</td></tr>
-          ) : (
-            items.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.name}</td>
-                <td>{item.category}</td>
-                <td>₹{item.price}</td>
-                <td>{item.is_available ? "Yes" : "No"}</td>
-                <td>
-                  <button onClick={() => handleEdit(item)}>Edit</button>
-                  <button onClick={() => handleDelete(item.id)} style={{ marginLeft: 8 }}>Delete</button>
+        <p className="card-label" style={{ margin: "20px 0 10px" }}>All menu items</p>
+        <table className="canteen-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center", color: "var(--canteen-text-secondary)" }}>
+                  No items found
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              items.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.name}</td>
+                  <td>{item.category}</td>
+                  <td>₹{item.price}</td>
+                  <td>
+                    <span className={`badge ${item.is_available ? "" : "badge-neutral"}`}>
+                      {item.is_available ? "Available" : "Unavailable"}
+                    </span>
+                  </td>
+                  <td>
+                    <button onClick={() => handleEdit(item)} className="btn-secondary" style={{ marginRight: 8 }}>
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(item.id)} className="btn-danger">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

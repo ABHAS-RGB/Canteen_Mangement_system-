@@ -1,9 +1,10 @@
 // frontend/src/pages/Wallet.jsx
 
 import { useState, useEffect } from "react";
-import axios from "axios"; // remove this comment-line note: adjust if you use a different axios instance/baseURL setup elsewhere in your app
+import axios from "axios";
+import Navbar from "../components/Navbar";
 
-const API_BASE = "http://localhost:5000/api"; // CHANGE to match your existing API base URL pattern
+const API_BASE = "http://localhost:5000/api";
 
 function Wallet() {
   const [balance, setBalance] = useState(null);
@@ -11,7 +12,7 @@ function Wallet() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token"); // adjust key name if you store the JWT differently
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchWalletData();
@@ -42,6 +43,7 @@ function Wallet() {
 
   return (
     <div className="wallet-page">
+      <Navbar />
       <h1>My Wallet</h1>
 
       {error && <p className="wallet-error">{error}</p>}

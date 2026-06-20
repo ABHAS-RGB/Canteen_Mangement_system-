@@ -1,5 +1,5 @@
 // frontend/src/pages/AdminWallets.jsx
-
+import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -74,9 +74,10 @@ function AdminWallets() {
 
   if (loading) return <div className="admin-wallets-page"><p>Loading wallets...</p></div>;
 
-  return (
-    <div className="admin-wallets-page">
-      <h1>Manage Student Wallets</h1>
+ return (
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <Navbar />
+      <h2>Manage Student Wallets</h2>
 
       {error && <p className="wallet-error">{error}</p>}
       {successMsg && <p className="wallet-success">{successMsg}</p>}

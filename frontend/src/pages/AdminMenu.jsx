@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -67,6 +68,7 @@ export default function AdminMenu() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <Navbar />
       <h2>Admin — Menu Management</h2>
       {msg && <p style={{ color: 'red' }}>{msg}</p>}
 
