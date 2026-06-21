@@ -28,17 +28,19 @@ export default function Navbar() {
         <Link to="/menu" className={`navbar-v2-link ${isActive("/menu") ? "active" : ""}`}>
           Menu
         </Link>
-        <Link to="/cart" className={`navbar-v2-link ${isActive("/cart") ? "active" : ""}`}>
-          Cart
-        </Link>
-        <Link to="/orders" className={`navbar-v2-link ${isActive("/orders") ? "active" : ""}`}>
-          My Orders
-        </Link>
 
         {user.role === "student" && (
-          <Link to="/wallet" className={`navbar-v2-link ${isActive("/wallet") ? "active" : ""}`}>
-            Wallet
-          </Link>
+          <>
+            <Link to="/cart" className={`navbar-v2-link ${isActive("/cart") ? "active" : ""}`}>
+              Cart
+            </Link>
+            <Link to="/orders" className={`navbar-v2-link ${isActive("/orders") ? "active" : ""}`}>
+              My Orders
+            </Link>
+            <Link to="/wallet" className={`navbar-v2-link ${isActive("/wallet") ? "active" : ""}`}>
+              Wallet
+            </Link>
+          </>
         )}
 
         {user.role === "staff" && (

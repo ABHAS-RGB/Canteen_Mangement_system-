@@ -23,12 +23,17 @@ export default function Dashboard() {
             <Link to="/menu" className="btn-secondary" style={{ textDecoration: "none" }}>
               Menu
             </Link>
-            <Link to="/cart" className="btn-secondary" style={{ textDecoration: "none" }}>
-              Cart
-            </Link>
-            <Link to="/orders" className="btn-secondary" style={{ textDecoration: "none" }}>
-              My Orders
-            </Link>
+
+            {user.role !== "staff" && (
+              <>
+                <Link to="/cart" className="btn-secondary" style={{ textDecoration: "none" }}>
+                  Cart
+                </Link>
+                <Link to="/orders" className="btn-secondary" style={{ textDecoration: "none" }}>
+                  My Orders
+                </Link>
+              </>
+            )}
 
             {(user.role === "staff" || user.role === "admin") && (
               <Link to="/staff/orders" className="btn-primary" style={{ textDecoration: "none" }}>

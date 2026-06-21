@@ -71,18 +71,22 @@ export default function Cart() {
             </tr>
           </thead>
           <tbody>
-            {menu.map((m) => (
-              <tr key={m.id}>
-                <td>{m.name}</td>
-                <td>{m.category}</td>
-                <td>₹{m.price}</td>
-                <td>
-                  <button onClick={() => addToCart(m.id)} className="btn-secondary">
-                    Add to cart
-                  </button>
-                </td>
-              </tr>
-            ))}
+           {menu.map((m) => (
+  <tr key={m.id}>
+    <td>{m.name}</td>
+    <td>{m.category}</td>
+    <td>₹{m.price}</td>
+    <td>
+      {m.is_available ? (
+        <button onClick={() => addToCart(m.id)} className="btn-secondary">
+          Add to cart
+        </button>
+      ) : (
+        <span className="badge badge-neutral">Unavailable</span>
+      )}
+    </td>
+  </tr>
+))}
           </tbody>
         </table>
 

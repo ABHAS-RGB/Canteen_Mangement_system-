@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 
 export default function Menu() {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const canManageMenu = user.role === "admin" || user.role === "staff";
+
   const [items, setItems] = useState([]);
   const [msg, setMsg] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -92,72 +95,76 @@ export default function Menu() {
     <div>
       <Navbar />
       <div className="page-container">
-        <h1 className="page-title">Menu management</h1>
-        <p className="page-subtitle">Add, edit, and manage canteen menu items</p>
+        <h1 className="page-title">Menu</h1>
+        <p className="page-subtitle">
+          {canManageMenu ? "Add, edit, and manage canteen menu items" : "Browse what's available today"}
+        </p>
 
-        <div className="card">
-          <p className="card-label">{editingId ? "Edit item" : "Add new item"}</p>
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <input
-                className="input-field"
-                name="name"
-                placeholder="Item name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-              <input
-                className="input-field"
-                name="description"
-                placeholder="Description"
-                value={form.description}
-                onChange={handleChange}
-              />
-              <div style={{ display: "flex", gap: 12 }}>
+        {canManageMenu && (
+          <div className="card">
+            <p className="card-label">{editingId ? "Edit item" : "Add new item"}</p>
+            <form onSubmit={handleSubmit}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <input
                   className="input-field"
-                  name="price"
-                  type="number"
-                  placeholder="Price"
-                  value={form.price}
+                  name="name"
+                  placeholder="Item name"
+                  value={form.name}
                   onChange={handleChange}
                   required
-                  style={{ flex: 1 }}
                 />
                 <input
                   className="input-field"
-                  name="category"
-                  placeholder="Category"
-                  value={form.category}
-                  onChange={handleChange}
-                  style={{ flex: 1 }}
-                />
-              </div>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
-                <input
-                  type="checkbox"
-                  name="is_available"
-                  checked={form.is_available}
+                  name="description"
+                  placeholder="Description"
+                  value={form.description}
                   onChange={handleChange}
                 />
-                Available
-              </label>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <input
+                    className="input-field"
+                    name="price"
+                    type="number"
+                    placeholder="Price"
+                    value={form.price}
+                    onChange={handleChange}
+                    required
+                    style={{ flex: 1 }}
+                  />
+                  <input
+                    className="input-field"
+                    name="category"
+                    placeholder="Category"
+                    value={form.category}
+                    onChange={handleChange}
+                    style={{ flex: 1 }}
+                  />
+                </div>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+                  <input
+                    type="checkbox"
+                    name="is_available"
+                    checked={form.is_available}
+                    onChange={handleChange}
+                  />
+                  Available
+                </label>
 
-              <div style={{ display: "flex", gap: 10 }}>
-                <button type="submit" className="btn-primary">
-                  {editingId ? "Update item" : "Add item"}
-                </button>
-                {editingId && (
-                  <button type="button" onClick={resetForm} className="btn-secondary">
-                    Cancel
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button type="submit" className="btn-primary">
+                    {editingId ? "Update item" : "Add item"}
                   </button>
-                )}
+                  {editingId && (
+                    <button type="button" onClick={resetForm} className="btn-secondary">
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          </form>
-          {msg && <p className="text-success" style={{ marginTop: 12 }}>{msg}</p>}
-        </div>
+            </form>
+            {msg && <p className="text-success" style={{ marginTop: 12 }}>{msg}</p>}
+          </div>
+        )}
 
         <div className="card">
           <p className="card-label">Filter menu</p>
@@ -188,7 +195,9 @@ export default function Menu() {
           </div>
         </div>
 
-        <p className="card-label" style={{ margin: "20px 0 10px" }}>All menu items</p>
+        <p className="card-label" style={{ margin: "20px 0 10px" }}>
+          {canManageMenu ? "All menu items" : "Today's menu"}
+        </p>
         <table className="canteen-table">
           <thead>
             <tr>
@@ -196,13 +205,13 @@ export default function Menu() {
               <th>Category</th>
               <th>Price</th>
               <th>Status</th>
-              <th>Actions</th>
+              {canManageMenu && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
             {items.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: "center", color: "var(--canteen-text-secondary)" }}>
+                <td colSpan={canManageMenu ? 5 : 4} style={{ textAlign: "center", color: "var(--canteen-text-secondary)" }}>
                   No items found
                 </td>
               </tr>
@@ -217,14 +226,16 @@ export default function Menu() {
                       {item.is_available ? "Available" : "Unavailable"}
                     </span>
                   </td>
-                  <td>
-                    <button onClick={() => handleEdit(item)} className="btn-secondary" style={{ marginRight: 8 }}>
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(item.id)} className="btn-danger">
-                      Delete
-                    </button>
-                  </td>
+                  {canManageMenu && (
+                    <td>
+                      <button onClick={() => handleEdit(item)} className="btn-secondary" style={{ marginRight: 8 }}>
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(item.id)} className="btn-danger">
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

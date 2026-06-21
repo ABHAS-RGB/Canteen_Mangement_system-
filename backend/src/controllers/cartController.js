@@ -3,10 +3,23 @@ const pool = require("../config/db");
 const addToCart = async (req, res) => {
   try {
     const user_id = req.user.id;
-const { menu_item_id, quantity } = req.body;
-if (!menu_item_id) {
-
+    const { menu_item_id, quantity } = req.body;
+    if (!menu_item_id) {
       return res.status(400).json({ message: "user_id and menu_item_id are required" });
+    }
+
+    // verify the item exists and is available before adding
+    const [menuItem] = await pool.query(
+      "SELECT id, is_available FROM menu_items WHERE id = ?",
+      [menu_item_id]
+    );
+
+    if (menuItem.length === 0) {
+      return res.status(404).json({ message: "Menu item not found" });
+    }
+
+    if (!menuItem[0].is_available) {
+      return res.status(400).json({ message: "This item is currently unavailable" });
     }
 
     const qty = quantity && quantity > 0 ? quantity : 1;
@@ -67,11 +80,10 @@ const updateCartItem = async (req, res) => {
       return res.status(400).json({ message: "Quantity must be at least 1" });
     }
 
-    // updateCartItem
-const [result] = await pool.query(
-  "UPDATE carts SET quantity = ? WHERE id = ? AND user_id = ?",
-  [quantity, id, userId]
-);
+    const [result] = await pool.query(
+      "UPDATE carts SET quantity = ? WHERE id = ? AND user_id = ?",
+      [quantity, id, userId]
+    );
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Cart item not found" });
     }
@@ -87,10 +99,10 @@ const deleteCartItem = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-   const [result] = await pool.query(
-  "DELETE FROM carts WHERE id = ? AND user_id = ?",
-  [id, userId]
-);
+    const [result] = await pool.query(
+      "DELETE FROM carts WHERE id = ? AND user_id = ?",
+      [id, userId]
+    );
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Cart item not found" });
     }

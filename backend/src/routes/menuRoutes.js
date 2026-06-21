@@ -15,8 +15,8 @@ const requireRole = require("../middleware/role");
 router.get("/", authMiddleware, getAllMenuItems);
 
 // POST/PUT/DELETE — admin only
-router.post("/", authMiddleware, requireRole("admin"), createMenuItem);
-router.put("/:id", authMiddleware, requireRole("admin"), updateMenuItem);
-router.delete("/:id", authMiddleware, requireRole("admin"), deleteMenuItem);
+router.post("/", authMiddleware, requireRole("admin", "staff"), createMenuItem);
+router.put("/:id", authMiddleware, requireRole("admin", "staff"), updateMenuItem);
+router.delete("/:id", authMiddleware, requireRole("admin", "staff"), deleteMenuItem);
 
 module.exports = router;
