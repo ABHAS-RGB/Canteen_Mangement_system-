@@ -26,15 +26,88 @@ export default function Login() {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "40px auto" }}>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required style={{ width: "100%", marginBottom: 10 }} />
-        <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required style={{ width: "100%", marginBottom: 10 }} />
-        <button type="submit" style={{ width: "100%" }}>Login</button>
-      </form>
-      {msg && <p>{msg}</p>}
-      <p>New user? <Link to="/register">Register</Link></p>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "var(--canteen-bg)",
+      }}
+    >
+      <div
+        className="card"
+        style={{
+          width: 380,
+          padding: 36,
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: "var(--canteen-accent)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 16px",
+            fontSize: 22,
+            color: "#fff",
+            fontWeight: 700,
+          }}
+        >
+          C
+        </div>
+
+        <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 8px" }}>
+          Welcome back
+        </h1>
+        <p className="text-muted" style={{ margin: "0 0 28px" }}>
+          Sign in to your Canteen account to continue.
+        </p>
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, textAlign: "left" }}>
+            <input
+              className="input-field"
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+            <input
+              className="input-field"
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: 20 }}>
+            Sign in
+          </button>
+        </form>
+
+        {msg && (
+          <p
+            className={msg.toLowerCase().includes("success") ? "text-success" : "text-danger"}
+            style={{ marginTop: 16 }}
+          >
+            {msg}
+          </p>
+        )}
+
+        <p className="text-muted" style={{ marginTop: 24 }}>
+          New user? <Link to="/register" style={{ color: "var(--canteen-accent)", fontWeight: 500 }}>Create an account</Link>
+        </p>
+      </div>
     </div>
   );
 }

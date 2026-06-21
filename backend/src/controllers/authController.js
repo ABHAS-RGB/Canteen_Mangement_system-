@@ -4,10 +4,21 @@ const pool = require("../config/db");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, accessCode } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email, password are required" });
+    }
+
+    const userRole = role || "student";
+
+    // NEW — staff and admin signups require a matching secret code
+    if (userRole === "staff" && accessCode !== process.env.STAFF_CODE) {
+      return res.status(403).json({ message: "Invalid staff access code" });
+    }
+
+    if (userRole === "admin" && accessCode !== process.env.ADMIN_CODE) {
+      return res.status(403).json({ message: "Invalid admin access code" });
     }
 
     const [existing] = await pool.query("SELECT id FROM users WHERE email = ?", [email]);
@@ -16,7 +27,6 @@ exports.register = async (req, res) => {
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    const userRole = role || "student";
 
     const [result] = await pool.query(
       "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)",
