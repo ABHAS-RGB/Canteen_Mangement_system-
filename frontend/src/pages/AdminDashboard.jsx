@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
 import axios from 'axios';
 
 export default function AdminDashboard() {
@@ -41,78 +42,92 @@ export default function AdminDashboard() {
 
   useEffect(() => { fetchData(); }, []);
 
-  if (loading) return <p style={{ padding: '2rem' }}>Loading admin dashboard...</p>;
-
-  return (
-    <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
-      <Navbar />
-      <h2>Admin Dashboard</h2>
-      {msg && <p style={{ color: 'red' }}>{msg}</p>}
-
-      {/* Stats cards */}
-      {stats && (
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', margin: '1rem 0 2rem' }}>
-          <StatCard label="Total Orders" value={stats.totalOrders} />
-          <StatCard label="Total Revenue" value={`₹${parseFloat(stats.totalRevenue).toFixed(2)}`} />
-          <StatCard label="Total Users" value={stats.totalUsers} />
-          <StatCard label="Menu Items" value={stats.totalMenuItems} />
+  if (loading) {
+    return (
+      <div>
+        <Navbar />
+        <div className="page-container">
+          <p className="text-muted">Loading admin dashboard...</p>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* User management */}
-      <h3>Manage Users</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '0.5rem' }}>
-        <thead>
-          <tr style={{ textAlign: 'left', borderBottom: '2px solid #e5e7eb' }}>
-            <th style={thStyle}>Name</th>
-            <th style={thStyle}>Email</th>
-            <th style={thStyle}>Role</th>
-            <th style={thStyle}>Change Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(u => (
-            <tr key={u.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-              <td style={tdStyle}>{u.name}</td>
-              <td style={tdStyle}>{u.email}</td>
-              <td style={tdStyle}>{u.role}</td>
-              <td style={tdStyle}>
-                <select
-                  value={u.role}
-                  onChange={(e) => changeRole(u.id, e.target.value)}
-                  style={{ padding: '4px 8px', borderRadius: '4px' }}
-                >
-                  <option value="student">student</option>
-                  <option value="staff">staff</option>
-                  <option value="admin">admin</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <p style={{ marginTop: '2rem' }}>
-        Manage menu items here: <a href="/admin/menu">Go to Menu Management</a>
-      </p>
-    </div>
-  );
-}
-
-function StatCard({ label, value }) {
   return (
-    <div style={{
-      flex: '1 1 160px',
-      background: '#f3f4f6',
-      borderRadius: '10px',
-      padding: '1rem',
-      textAlign: 'center',
-    }}>
-      <p style={{ fontSize: '0.8rem', color: '#666', margin: 0 }}>{label}</p>
-      <p style={{ fontSize: '1.4rem', fontWeight: 600, margin: '4px 0 0' }}>{value}</p>
+    <div>
+      <Navbar />
+      <div className="page-container">
+        <h1 className="page-title">Admin dashboard</h1>
+        <p className="page-subtitle">Overview of orders, revenue, and user management</p>
+
+        {msg && <p className="text-danger" style={{ marginBottom: 16 }}>{msg}</p>}
+
+        {stats && (
+          <div className="card-row">
+            <div className="stat-card">
+              <p className="stat-label">Total orders</p>
+              <p className="stat-value">{stats.totalOrders}</p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-label">Total revenue</p>
+              <p className="stat-value">₹{parseFloat(stats.totalRevenue).toFixed(2)}</p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-label">Total users</p>
+              <p className="stat-value">{stats.totalUsers}</p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-label">Menu items</p>
+              <p className="stat-value">{stats.totalMenuItems}</p>
+            </div>
+          </div>
+        )}
+
+        <p className="card-label" style={{ margin: "24px 0 10px" }}>Manage users</p>
+        <table className="canteen-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Change role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(u => (
+              <tr key={u.id}>
+                <td>{u.name}</td>
+                <td>{u.email}</td>
+                <td>
+                  <span className="badge">{u.role}</span>
+                </td>
+                <td>
+                  <select
+                    className="input-field"
+                    value={u.role}
+                    onChange={(e) => changeRole(u.id, e.target.value)}
+                    style={{ width: "auto", padding: "6px 10px" }}
+                  >
+                    <option value="student">student</option>
+                    <option value="staff">staff</option>
+                    <option value="admin">admin</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="card" style={{ marginTop: 20 }}>
+          <p className="card-label">Menu items</p>
+          <p className="text-muted" style={{ marginBottom: 12 }}>
+            Add, edit, or remove items from the canteen menu.
+          </p>
+          <Link to="/admin/menu" className="btn-primary" style={{ textDecoration: "none" }}>
+            Go to menu management
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
-
-const thStyle = { padding: '8px', fontSize: '0.85rem', color: '#555' };
-const tdStyle = { padding: '8px', fontSize: '0.9rem' };

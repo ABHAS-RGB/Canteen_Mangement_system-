@@ -4,11 +4,11 @@ import axios from 'axios';
 
 const STATUSES = ['pending', 'preparing', 'ready', 'delivered'];
 
-const statusColor = {
-  pending:   { background: '#fef3c7', color: '#92400e' },
-  preparing: { background: '#dbeafe', color: '#1e40af' },
-  ready:     { background: '#d1fae5', color: '#065f46' },
-  delivered: { background: '#f3f4f6', color: '#374151' },
+const statusBadgeClass = {
+  pending: "badge-warning",
+  preparing: "badge-warning",
+  ready: "",
+  delivered: "badge-neutral",
 };
 
 export default function StaffOrders() {
@@ -48,84 +48,64 @@ export default function StaffOrders() {
   useEffect(() => { fetchOrders(); }, []);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '820px', margin: '0 auto' }}>
+    <div>
       <Navbar />
-      <h2>Staff — Order Management</h2>
-      {msg && <p style={{ color: 'red' }}>{msg}</p>}
+      <div className="page-container">
+        <h1 className="page-title">Staff — order management</h1>
+        <p className="page-subtitle">Update order status as items are prepared</p>
 
-      {loading ? <p>Loading orders...</p> : orders.length === 0 ? (
-        <p>No orders yet.</p>
-      ) : (
-        orders.map(order => (
-          <div key={order.id} style={cardStyle}>
+        {msg && <p className="text-danger" style={{ marginBottom: 16 }}>{msg}</p>}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <strong>Order #{order.id}</strong>
-                <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#666' }}>
-                  {order.student_email}
+        {loading ? (
+          <p className="text-muted">Loading orders...</p>
+        ) : orders.length === 0 ? (
+          <div className="card">
+            <p className="text-muted">No orders yet.</p>
+          </div>
+        ) : (
+          orders.map(order => (
+            <div key={order.id} className="card" style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div>
+                  <span className="card-title">Order #{order.id}</span>
+                  <span className="text-muted" style={{ marginLeft: 10 }}>
+                    {order.student_email}
+                  </span>
+                </div>
+                <span className={`badge ${statusBadgeClass[order.status] || ""}`}>
+                  {order.status}
                 </span>
               </div>
-              <span style={{ ...badgeStyle, ...statusColor[order.status] }}>
-                {order.status}
-              </span>
+
+              <ul style={{ margin: '0 0 12px', paddingLeft: 20 }}>
+                {(order.items || []).map(item => (
+                  <li key={item.id} style={{ fontSize: 14 }}>
+                    {item.name} × {item.quantity}
+                  </li>
+                ))}
+              </ul>
+
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+                {STATUSES.map(s => (
+                  <button
+                    key={s}
+                    onClick={() => updateStatus(order.id, s)}
+                    className={order.status === s ? "btn-primary" : "btn-secondary"}
+                    style={{ fontSize: 13, padding: "7px 14px" }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-muted" style={{ margin: 0 }}>
+                ₹{parseFloat(order.total_amount).toFixed(2)} —{' '}
+                {new Date(order.created_at).toLocaleString()}
+              </p>
             </div>
-
-            <ul style={{ margin: '0.6rem 0', paddingLeft: '1.2rem' }}>
-              {(order.items || []).map(item => (
-                <li key={item.id} style={{ fontSize: '0.9rem' }}>
-                  {item.name} × {item.quantity}
-                </li>
-              ))}
-            </ul>
-
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-              {STATUSES.map(s => (
-                <button
-                  key={s}
-                  onClick={() => updateStatus(order.id, s)}
-                  style={{
-                    ...btnStyle,
-                    background: order.status === s ? '#2563eb' : '#e5e7eb',
-                    color: order.status === s ? '#fff' : '#374151',
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-
-            <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.5rem' }}>
-              ₹{parseFloat(order.total_amount).toFixed(2)} —{' '}
-              {new Date(order.created_at).toLocaleString()}
-            </p>
-
-          </div>
-        ))
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
-
-const cardStyle = {
-  border: '1px solid #e5e7eb',
-  borderRadius: '10px',
-  padding: '1rem 1.2rem',
-  marginTop: '1rem',
-  background: '#f9fafb',
-};
-
-const badgeStyle = {
-  padding: '3px 12px',
-  borderRadius: '12px',
-  fontSize: '0.8rem',
-  fontWeight: 500,
-};
-
-const btnStyle = {
-  padding: '5px 14px',
-  borderRadius: '6px',
-  border: 'none',
-  cursor: 'pointer',
-  fontSize: '0.82rem',
-};

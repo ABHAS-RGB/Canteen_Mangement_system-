@@ -67,86 +67,97 @@ export default function AdminMenu() {
   useEffect(() => { fetchItems(); }, []);
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+    <div>
       <Navbar />
-      <h2>Admin — Menu Management</h2>
-      {msg && <p style={{ color: 'red' }}>{msg}</p>}
+      <div className="page-container">
+        <h1 className="page-title">Admin — menu management</h1>
+        <p className="page-subtitle">Add, edit, and manage canteen menu items</p>
 
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <input
-          placeholder="Item name"
-          value={form.name}
-          onChange={e => setForm({ ...form, name: e.target.value })}
-          required
-          style={inputStyle}
-        />
-        <input
-          placeholder="Price"
-          type="number"
-          step="0.01"
-          value={form.price}
-          onChange={e => setForm({ ...form, price: e.target.value })}
-          required
-          style={inputStyle}
-        />
-        <input
-          placeholder="Category (e.g. Snacks, Beverages)"
-          value={form.category}
-          onChange={e => setForm({ ...form, category: e.target.value })}
-          style={inputStyle}
-        />
-        <input
-          placeholder="Description (optional)"
-          value={form.description}
-          onChange={e => setForm({ ...form, description: e.target.value })}
-          style={inputStyle}
-        />
-        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
-          <input
-            type="checkbox"
-            checked={form.is_available}
-            onChange={e => setForm({ ...form, is_available: e.target.checked })}
-          />
-          Available
-        </label>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button type="submit" style={btnPrimary}>
-            {editingId ? 'Update Item' : 'Add Item'}
-          </button>
-          {editingId && (
-            <button type="button" onClick={resetForm} style={btnSecondary}>
-              Cancel
-            </button>
-          )}
+        {msg && <p className="text-danger" style={{ marginBottom: 16 }}>{msg}</p>}
+
+        <div className="card">
+          <p className="card-label">{editingId ? "Edit item" : "Add new item"}</p>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input
+                className="input-field"
+                placeholder="Item name"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                required
+              />
+              <input
+                className="input-field"
+                placeholder="Price"
+                type="number"
+                step="0.01"
+                value={form.price}
+                onChange={e => setForm({ ...form, price: e.target.value })}
+                required
+              />
+              <input
+                className="input-field"
+                placeholder="Category (e.g. Snacks, Beverages)"
+                value={form.category}
+                onChange={e => setForm({ ...form, category: e.target.value })}
+              />
+              <input
+                className="input-field"
+                placeholder="Description (optional)"
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+              />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+                <input
+                  type="checkbox"
+                  checked={form.is_available}
+                  onChange={e => setForm({ ...form, is_available: e.target.checked })}
+                />
+                Available
+              </label>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button type="submit" className="btn-primary">
+                  {editingId ? 'Update item' : 'Add item'}
+                </button>
+                {editingId && (
+                  <button type="button" onClick={resetForm} className="btn-secondary">
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
 
-      <h3 style={{ marginTop: '2rem' }}>Current Menu</h3>
-      {loading ? <p>Loading...</p> : items.length === 0 ? (
-        <p>No items yet.</p>
-      ) : (
-        items.map(item => (
-          <div key={item.id} style={itemCard}>
-            <div>
-              <strong>{item.name}</strong> — ₹{parseFloat(item.price).toFixed(2)}
-              {item.category && <span style={{ color: '#666', marginLeft: '8px', fontSize: '0.8rem' }}>[{item.category}]</span>}
-              {!item.is_available && <span style={{ color: '#dc2626', marginLeft: '8px', fontSize: '0.8rem' }}>(unavailable)</span>}
-              {item.description && <p style={{ fontSize: '0.85rem', color: '#666', margin: '4px 0 0' }}>{item.description}</p>}
-            </div>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <button onClick={() => handleEdit(item)} style={btnSecondary}>Edit</button>
-              <button onClick={() => handleDelete(item.id)} style={btnDanger}>Delete</button>
-            </div>
+        <p className="card-label" style={{ margin: '24px 0 10px' }}>Current menu</p>
+
+        {loading ? (
+          <p className="text-muted">Loading...</p>
+        ) : items.length === 0 ? (
+          <div className="card">
+            <p className="text-muted">No items yet.</p>
           </div>
-        ))
-      )}
+        ) : (
+          items.map(item => (
+            <div key={item.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <p className="card-title" style={{ marginBottom: 4 }}>
+                  {item.name} — ₹{parseFloat(item.price).toFixed(2)}
+                </p>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                  {item.category && <span className="badge badge-neutral">{item.category}</span>}
+                  {!item.is_available && <span className="badge badge-danger">Unavailable</span>}
+                </div>
+                {item.description && <p className="text-muted" style={{ margin: 0 }}>{item.description}</p>}
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                <button onClick={() => handleEdit(item)} className="btn-secondary">Edit</button>
+                <button onClick={() => handleDelete(item.id)} className="btn-danger">Delete</button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
-
-const formStyle = { display: 'flex', flexDirection: 'column', gap: '10px', background: '#f9fafb', padding: '1rem', borderRadius: '10px' };
-const inputStyle = { padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db' };
-const btnPrimary = { padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' };
-const btnSecondary = { padding: '6px 12px', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' };
-const btnDanger = { padding: '6px 12px', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' };
-const itemCard = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '0.8rem 1rem', marginTop: '0.6rem' };

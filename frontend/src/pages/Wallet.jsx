@@ -39,55 +39,80 @@ function Wallet() {
     }
   };
 
-  if (loading) return <div className="wallet-page"><p>Loading wallet...</p></div>;
+  if (loading) {
+    return (
+      <div>
+        <Navbar />
+        <div className="page-container">
+          <p className="text-muted">Loading wallet...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="wallet-page">
+    <div>
       <Navbar />
-      <h1>My Wallet</h1>
+      <div className="page-container">
+        <h1 className="page-title">My wallet</h1>
+        <p className="page-subtitle">View your balance and transaction history</p>
 
-      {error && <p className="wallet-error">{error}</p>}
+        {error && <p className="text-danger" style={{ marginBottom: 16 }}>{error}</p>}
 
-      <div className="wallet-balance-card">
-        <span className="wallet-balance-label">Current Balance</span>
-        <span className="wallet-balance-amount">₹{Number(balance).toFixed(2)}</span>
-        <p className="wallet-balance-note">
-          Need to top up? Visit the canteen counter — admin will add balance to your account.
-        </p>
-      </div>
+        <div
+          className="card"
+          style={{
+            background: "var(--canteen-accent)",
+            color: "#fff",
+            border: "none",
+          }}
+        >
+          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.85, margin: 0 }}>
+            Current balance
+          </p>
+          <p style={{ fontSize: 36, fontWeight: 700, margin: "6px 0 14px" }}>
+            ₹{Number(balance).toFixed(2)}
+          </p>
+          <p style={{ fontSize: 13, opacity: 0.9, margin: 0 }}>
+            Need to top up? Visit the canteen counter — admin will add balance to your account.
+          </p>
+        </div>
 
-      <h2>Transaction History</h2>
+        <p className="card-label" style={{ margin: "24px 0 10px" }}>Transaction history</p>
 
-      {transactions.length === 0 ? (
-        <p>No transactions yet.</p>
-      ) : (
-        <table className="wallet-tx-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Balance After</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((tx) => (
-              <tr key={tx.id}>
-                <td>{new Date(tx.created_at).toLocaleString()}</td>
-                <td>{tx.reason}</td>
-                <td>
-                  <span className={tx.type === "credit" ? "tx-credit" : "tx-debit"}>
-                    {tx.type === "credit" ? "+ Credit" : "- Debit"}
-                  </span>
-                </td>
-                <td>₹{Number(tx.amount).toFixed(2)}</td>
-                <td>₹{Number(tx.balance_after).toFixed(2)}</td>
+        {transactions.length === 0 ? (
+          <div className="card">
+            <p className="text-muted">No transactions yet.</p>
+          </div>
+        ) : (
+          <table className="canteen-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Balance after</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {transactions.map((tx) => (
+                <tr key={tx.id}>
+                  <td>{new Date(tx.created_at).toLocaleString()}</td>
+                  <td>{tx.reason}</td>
+                  <td>
+                    <span className={tx.type === "credit" ? "badge" : "badge badge-danger"}>
+                      {tx.type === "credit" ? "+ Credit" : "− Debit"}
+                    </span>
+                  </td>
+                  <td>₹{Number(tx.amount).toFixed(2)}</td>
+                  <td>₹{Number(tx.balance_after).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
