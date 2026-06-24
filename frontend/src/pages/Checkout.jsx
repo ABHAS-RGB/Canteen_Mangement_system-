@@ -42,7 +42,11 @@ export default function Checkout() {
       setLoading(true);
       setMsg("");
 
-      const res = await API.post("/orders/place", { payment_method: paymentMethod });
+     const canteen = localStorage.getItem("canteen");
+const res = await API.post("/orders/place", {
+  payment_method: paymentMethod,
+  canteen: canteen || "A-Block",
+});
 
       setMsg(res.data.message || "Order placed successfully");
       setCart([]);

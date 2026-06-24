@@ -2,7 +2,7 @@ const pool = require("../config/db");
 
 const getAllMenuItems = async (req, res) => {
   try {
-    const { search, category } = req.query;
+    const { search, category, canteen } = req.query;
 
     let query = "SELECT * FROM menu_items WHERE 1=1";
     const params = [];
@@ -17,6 +17,12 @@ const getAllMenuItems = async (req, res) => {
       params.push(category);
     }
 
+    // NEW — filter by canteen if provided
+    if (canteen) {
+      query += " AND canteen = ?";
+      params.push(canteen);
+    }
+
     query += " ORDER BY id DESC";
 
     const [rows] = await pool.query(query, params);
@@ -28,14 +34,18 @@ const getAllMenuItems = async (req, res) => {
 
 const createMenuItem = async (req, res) => {
   try {
-    const { name, description, price, category, is_available } = req.body;
+    const { name, description, price, category, is_available, canteen } = req.body;
     if (!name || price === undefined || price === null) {
       return res.status(400).json({ message: "Name and price are required" });
     }
 
+    if (!canteen || !["A-Block", "C-Block"].includes(canteen)) {
+      return res.status(400).json({ message: "Valid canteen (A-Block or C-Block) is required" });
+    }
+
     const [result] = await pool.query(
-      "INSERT INTO menu_items (name, description, price, category, is_available) VALUES (?, ?, ?, ?, ?)",
-      [name, description || "", price, category || "", is_available ?? true]
+      "INSERT INTO menu_items (name, description, price, category, is_available, canteen) VALUES (?, ?, ?, ?, ?, ?)",
+      [name, description || "", price, category || "", is_available ?? true, canteen]
     );
 
     return res.status(201).json({ message: "Menu item created", id: result.insertId });
@@ -47,13 +57,17 @@ const createMenuItem = async (req, res) => {
 const updateMenuItem = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, is_available } = req.body;
+    const { name, description, price, category, is_available, canteen } = req.body;
+
+    if (canteen && !["A-Block", "C-Block"].includes(canteen)) {
+      return res.status(400).json({ message: "Valid canteen (A-Block or C-Block) is required" });
+    }
 
     const [result] = await pool.query(
       `UPDATE menu_items
-       SET name = ?, description = ?, price = ?, category = ?, is_available = ?
+       SET name = ?, description = ?, price = ?, category = ?, is_available = ?, canteen = ?
        WHERE id = ?`,
-      [name, description || "", price, category || "", is_available ?? true, id]
+      [name, description || "", price, category || "", is_available ?? true, canteen || "A-Block", id]
     );
 
     if (result.affectedRows === 0) {

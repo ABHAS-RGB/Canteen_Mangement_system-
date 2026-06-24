@@ -19,7 +19,14 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setMsg("Login successful");
-      setTimeout(() => navigate("/dashboard"), 600);
+      const user = res.data.user;
+setTimeout(() => {
+  if (user.role === "student") {
+    navigate("/select-canteen");
+  } else {
+    navigate("/dashboard");
+  }
+}, 600);
     } catch (err) {
       setMsg(err.response?.data?.message || "Login failed");
     }

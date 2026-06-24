@@ -6,10 +6,9 @@ const placeOrder = async (req, res) => {
 
   try {
     const userId = req.user.id;
-    const { payment_method } = req.body; // NEW — expect "wallet" or "cash" from frontend
-
-    // NEW — basic validation, default to cash if not provided
-    const paymentMethod = payment_method === "wallet" ? "wallet" : "cash";
+    const { payment_method, canteen } = req.body;
+const paymentMethod = payment_method === "wallet" ? "wallet" : "cash";
+const orderCanteen = canteen || "A-Block";
 
     await connection.beginTransaction();
 
@@ -32,10 +31,10 @@ const placeOrder = async (req, res) => {
     );
 
     // CHANGED — added payment_method column to the insert
-    const [orderResult] = await connection.query(
-      "INSERT INTO orders (user_id, total_amount, payment_method, status) VALUES (?, ?, ?, ?)",
-      [userId, totalAmount, paymentMethod, "Pending"]
-    );
+const [orderResult] = await connection.query(
+  "INSERT INTO orders (user_id, total_amount, payment_method, canteen, status) VALUES (?, ?, ?, ?, ?)",
+  [userId, totalAmount, paymentMethod, orderCanteen, "Pending"]
+);
 
     const orderId = orderResult.insertId;
 

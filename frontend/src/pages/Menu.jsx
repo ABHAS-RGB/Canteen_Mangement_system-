@@ -18,14 +18,17 @@ export default function Menu() {
     description: "",
     price: "",
     category: "",
+    canteen: "A-Block", // NEW
     is_available: true,
   });
 
   const loadMenu = async () => {
     try {
+      const canteen = localStorage.getItem("canteen");
       const params = {};
       if (search) params.search = search;
       if (category) params.category = category;
+      if (canteen) params.canteen = canteen;
 
       const res = await API.get("/menu", { params });
       setItems(res.data);
@@ -44,7 +47,7 @@ export default function Menu() {
   };
 
   const resetForm = () => {
-    setForm({ name: "", description: "", price: "", category: "", is_available: true });
+    setForm({ name: "", description: "", price: "", category: "", canteen: "A-Block", is_available: true });
     setEditingId(null);
   };
 
@@ -76,6 +79,7 @@ export default function Menu() {
       description: item.description || "",
       price: item.price || "",
       category: item.category || "",
+      canteen: item.canteen || "A-Block", // NEW
       is_available: !!item.is_available,
     });
   };
@@ -140,6 +144,18 @@ export default function Menu() {
                     style={{ flex: 1 }}
                   />
                 </div>
+
+                {/* NEW — canteen selector */}
+                <select
+                  className="input-field"
+                  name="canteen"
+                  value={form.canteen}
+                  onChange={handleChange}
+                >
+                  <option value="A-Block">A-Block Canteen</option>
+                  <option value="C-Block">C-Block Canteen</option>
+                </select>
+
                 <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
                   <input
                     type="checkbox"
@@ -204,6 +220,7 @@ export default function Menu() {
               <th>Name</th>
               <th>Category</th>
               <th>Price</th>
+              <th>Canteen</th>
               <th>Status</th>
               {canManageMenu && <th>Actions</th>}
             </tr>
@@ -211,7 +228,7 @@ export default function Menu() {
           <tbody>
             {items.length === 0 ? (
               <tr>
-                <td colSpan={canManageMenu ? 5 : 4} style={{ textAlign: "center", color: "var(--canteen-text-secondary)" }}>
+                <td colSpan={canManageMenu ? 6 : 5} style={{ textAlign: "center", color: "var(--canteen-text-secondary)" }}>
                   No items found
                 </td>
               </tr>
@@ -221,6 +238,7 @@ export default function Menu() {
                   <td>{item.name}</td>
                   <td>{item.category}</td>
                   <td>₹{item.price}</td>
+                  <td><span className="badge badge-neutral">{item.canteen}</span></td>
                   <td>
                     <span className={`badge ${item.is_available ? "" : "badge-neutral"}`}>
                       {item.is_available ? "Available" : "Unavailable"}

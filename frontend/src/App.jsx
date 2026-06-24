@@ -11,6 +11,7 @@ import StaffOrders from './pages/StaffOrders';
 import AdminMenu from './pages/AdminMenu';
 import Wallet from "./pages/Wallet";
 import AdminWallets from "./pages/AdminWallets";
+import CanteenSelect from "./pages/CanteenSelect";
 
 function ProtectedRoute({ children, allowedRoles }) {
   const token = localStorage.getItem("token");
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/select-canteen" element={<ProtectedRoute allowedRoles={["student"]}><CanteenSelect /></ProtectedRoute>} />
         <Route path="/wallet" element={<ProtectedRoute allowedRoles={["student"]}><Wallet /></ProtectedRoute>} />
         <Route path="/admin/wallets" element={<ProtectedRoute allowedRoles={["admin"]}><AdminWallets /></ProtectedRoute>} />
         <Route path="/admin/menu" element={<ProtectedRoute allowedRoles={["admin", "staff"]}><AdminMenu /></ProtectedRoute>} />

@@ -5,7 +5,14 @@ import axios from 'axios';
 export default function AdminMenu() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', price: '', description: '', category: '', is_available: true });
+  const [form, setForm] = useState({
+    name: '',
+    price: '',
+    description: '',
+    category: '',
+    canteen: 'A-Block', // NEW
+    is_available: true
+  });
   const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState('');
 
@@ -24,7 +31,7 @@ export default function AdminMenu() {
   };
 
   const resetForm = () => {
-    setForm({ name: '', price: '', description: '', category: '', is_available: true });
+    setForm({ name: '', price: '', description: '', category: '', canteen: 'A-Block', is_available: true });
     setEditingId(null);
   };
 
@@ -49,6 +56,7 @@ export default function AdminMenu() {
       price: item.price,
       description: item.description || '',
       category: item.category || '',
+      canteen: item.canteen || 'A-Block', // NEW
       is_available: !!item.is_available,
     });
     setEditingId(item.id);
@@ -107,6 +115,17 @@ export default function AdminMenu() {
                 value={form.description}
                 onChange={e => setForm({ ...form, description: e.target.value })}
               />
+
+              {/* NEW — canteen selector */}
+              <select
+                className="input-field"
+                value={form.canteen}
+                onChange={e => setForm({ ...form, canteen: e.target.value })}
+              >
+                <option value="A-Block">A-Block Canteen</option>
+                <option value="C-Block">C-Block Canteen</option>
+              </select>
+
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
                 <input
                   type="checkbox"
@@ -146,6 +165,7 @@ export default function AdminMenu() {
                 </p>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
                   {item.category && <span className="badge badge-neutral">{item.category}</span>}
+                  <span className="badge">{item.canteen}</span>
                   {!item.is_available && <span className="badge badge-danger">Unavailable</span>}
                 </div>
                 {item.description && <p className="text-muted" style={{ margin: 0 }}>{item.description}</p>}

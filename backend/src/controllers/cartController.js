@@ -112,5 +112,14 @@ const deleteCartItem = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+const clearCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await pool.query("DELETE FROM carts WHERE user_id = ?", [userId]);
+    return res.json({ message: "Cart cleared" });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
-module.exports = { addToCart, getCartByUser, updateCartItem, deleteCartItem };
+module.exports = { addToCart, getCartByUser, updateCartItem, deleteCartItem, clearCart };

@@ -12,10 +12,12 @@ export default function Cart() {
   const [total, setTotal] = useState(0);
   const [msg, setMsg] = useState("");
 
-  const loadMenu = async () => {
-    const res = await API.get("/menu");
-    setMenu(res.data);
-  };
+ const loadMenu = async () => {
+  const canteen = localStorage.getItem("canteen");
+  const params = canteen ? { canteen } : {};
+  const res = await API.get("/menu", { params });
+  setMenu(res.data);
+};
 
   const loadCart = async () => {
     if (!userId) return;
