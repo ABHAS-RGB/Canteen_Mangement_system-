@@ -25,7 +25,9 @@ export default function Register() {
       setMsg(res.data.message || "Registered successfully");
       setTimeout(() => navigate("/login"), 800);
     } catch (err) {
-      setMsg(err.response?.data?.message || "Registration failed");
+      const errorDetail = err.response?.data?.error;
+      const errorMsg = err.response?.data?.message || "Registration failed";
+      setMsg(errorDetail ? `${errorMsg}: ${errorDetail}` : errorMsg);
     }
   };
 
@@ -109,8 +111,8 @@ export default function Register() {
               onChange={handleChange}
             >
               <option value="student">Student</option>
-              <option value="staff">Staff</option>
-              <option value="admin">Admin</option>
+<option value="staff">Staff</option>
+<option value="admin">Admin</option>
             </select>
 
             {needsCode && (
