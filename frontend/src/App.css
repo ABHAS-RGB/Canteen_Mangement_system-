@@ -567,3 +567,33 @@
   color: var(--canteen-danger);
   border-color: transparent;
 }
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  .app-navbar-v2 {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 20px;
+    padding: 12px;
+    margin: 10px;
+    gap: 12px;
+  }
+  .navbar-v2-links {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .navbar-v2-links::-webkit-scrollbar {
+    display: none;
+  }
+  .navbar-v2-user {
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px solid var(--canteen-border);
+  }
+  .page-container {
+    width: 100%;
+    padding: 16px 16px 60px;
+  }
+}
