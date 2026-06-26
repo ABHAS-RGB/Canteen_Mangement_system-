@@ -1,27 +1,19 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from "../services/api";
 
 export default function AdminMenu() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
-    name: '',
-    price: '',
-    description: '',
-    category: '',
-    canteen: 'A-Block', // NEW
-    is_available: true
+    name: '', price: '', description: '', category: '', canteen: 'A-Block', is_available: true
   });
   const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState('');
 
-  const token = localStorage.getItem('token');
-  const headers = { Authorization: `Bearer ${token}` };
-
   const fetchItems = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/menu', { headers });
+      const res = await API.get('/menu');
       setItems(res.data);
     } catch (err) {
       setMsg(err.response?.data?.message || 'Failed to load menu.');
@@ -39,9 +31,9 @@ export default function AdminMenu() {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/menu/${editingId}`, form, { headers });
+        await API.put(`/menu/${editingId}`, form);
       } else {
-        await axios.post('http://localhost:5000/api/menu', form, { headers });
+        await API.post('/menu', form);
       }
       resetForm();
       fetchItems();
@@ -56,7 +48,7 @@ export default function AdminMenu() {
       price: item.price,
       description: item.description || '',
       category: item.category || '',
-      canteen: item.canteen || 'A-Block', // NEW
+      canteen: item.canteen || 'A-Block',
       is_available: !!item.is_available,
     });
     setEditingId(item.id);
@@ -65,7 +57,7 @@ export default function AdminMenu() {
   const handleDelete = async (id) => {
     if (!confirm('Delete this item?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/menu/${id}`, { headers });
+      await API.delete(`/menu/${id}`);
       fetchItems();
     } catch {
       alert('Failed to delete item');
@@ -87,51 +79,22 @@ export default function AdminMenu() {
           <p className="card-label">{editingId ? "Edit item" : "Add new item"}</p>
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <input
-                className="input-field"
-                placeholder="Item name"
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-                required
-              />
-              <input
-                className="input-field"
-                placeholder="Price"
-                type="number"
-                step="0.01"
-                value={form.price}
-                onChange={e => setForm({ ...form, price: e.target.value })}
-                required
-              />
-              <input
-                className="input-field"
-                placeholder="Category (e.g. Snacks, Beverages)"
-                value={form.category}
-                onChange={e => setForm({ ...form, category: e.target.value })}
-              />
-              <input
-                className="input-field"
-                placeholder="Description (optional)"
-                value={form.description}
-                onChange={e => setForm({ ...form, description: e.target.value })}
-              />
-
-              {/* NEW — canteen selector */}
-              <select
-                className="input-field"
-                value={form.canteen}
-                onChange={e => setForm({ ...form, canteen: e.target.value })}
-              >
+              <input className="input-field" placeholder="Item name" value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })} required />
+              <input className="input-field" placeholder="Price" type="number" step="0.01"
+                value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
+              <input className="input-field" placeholder="Category (e.g. Snacks, Beverages)"
+                value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} />
+              <input className="input-field" placeholder="Description (optional)"
+                value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              <select className="input-field" value={form.canteen}
+                onChange={e => setForm({ ...form, canteen: e.target.value })}>
                 <option value="A-Block">A-Block Canteen</option>
                 <option value="C-Block">C-Block Canteen</option>
               </select>
-
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
-                <input
-                  type="checkbox"
-                  checked={form.is_available}
-                  onChange={e => setForm({ ...form, is_available: e.target.checked })}
-                />
+                <input type="checkbox" checked={form.is_available}
+                  onChange={e => setForm({ ...form, is_available: e.target.checked })} />
                 Available
               </label>
               <div style={{ display: 'flex', gap: 10 }}>
@@ -139,9 +102,7 @@ export default function AdminMenu() {
                   {editingId ? 'Update item' : 'Add item'}
                 </button>
                 {editingId && (
-                  <button type="button" onClick={resetForm} className="btn-secondary">
-                    Cancel
-                  </button>
+                  <button type="button" onClick={resetForm} className="btn-secondary">Cancel</button>
                 )}
               </div>
             </div>
@@ -153,9 +114,7 @@ export default function AdminMenu() {
         {loading ? (
           <p className="text-muted">Loading...</p>
         ) : items.length === 0 ? (
-          <div className="card">
-            <p className="text-muted">No items yet.</p>
-          </div>
+          <div className="card"><p className="text-muted">No items yet.</p></div>
         ) : (
           items.map(item => (
             <div key={item.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>

@@ -1,22 +1,19 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import axios from 'axios';
+import API from "../services/api";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
-  const token = localStorage.getItem('token');
-
-  const headers = { Authorization: `Bearer ${token}` };
 
   const fetchData = async () => {
     try {
       const [statsRes, usersRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/stats', { headers }),
-        axios.get('http://localhost:5000/api/admin/users', { headers }),
+        API.get('/admin/stats'),
+        API.get('/admin/users'),
       ]);
       setStats(statsRes.data);
       setUsers(usersRes.data);
@@ -29,11 +26,7 @@ export default function AdminDashboard() {
 
   const changeRole = async (userId, role) => {
     try {
-      await axios.patch(
-        `http://localhost:5000/api/admin/users/${userId}/role`,
-        { role },
-        { headers }
-      );
+      await API.patch(`/admin/users/${userId}/role`, { role });
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u));
     } catch {
       alert('Failed to update role');
@@ -98,9 +91,7 @@ export default function AdminDashboard() {
               <tr key={u.id}>
                 <td>{u.name}</td>
                 <td>{u.email}</td>
-                <td>
-                  <span className="badge">{u.role}</span>
-                </td>
+                <td><span className="badge">{u.role}</span></td>
                 <td>
                   <select
                     className="input-field"

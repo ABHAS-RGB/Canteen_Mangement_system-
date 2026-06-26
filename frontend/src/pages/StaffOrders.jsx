@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from "../services/api";
 
 const STATUSES = ['pending', 'preparing', 'ready', 'delivered'];
 
@@ -15,13 +15,10 @@ export default function StaffOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
-  const token = localStorage.getItem('token');
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/staff/orders', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await API.get('/staff/orders');
       setOrders(res.data);
     } catch (err) {
       setMsg(err.response?.data?.message || 'Failed to load orders.');
@@ -32,14 +29,8 @@ export default function StaffOrders() {
 
   const updateStatus = async (orderId, status) => {
     try {
-      await axios.patch(
-        `http://localhost:5000/api/staff/orders/${orderId}/status`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setOrders(prev =>
-        prev.map(o => o.id === orderId ? { ...o, status } : o)
-      );
+      await API.patch(`/staff/orders/${orderId}/status`, { status });
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
     } catch {
       alert('Failed to update status');
     }
@@ -59,18 +50,17 @@ export default function StaffOrders() {
         {loading ? (
           <p className="text-muted">Loading orders...</p>
         ) : orders.length === 0 ? (
-          <div className="card">
-            <p className="text-muted">No orders yet.</p>
-          </div>
+          <div className="card"><p className="text-muted">No orders yet.</p></div>
         ) : (
           orders.map(order => (
             <div key={order.id} className="card" style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                 <div>
                   <span className="card-title">Order #{order.id}</span>
-                  <span className="text-muted" style={{ marginLeft: 10 }}>
-                    {order.student_email}
-                  </span>
+                  <span className="text-muted" style={{ marginLeft: 10 }}>{order.student_email}</span>
+                  {order.canteen && (
+                    <span className="badge badge-neutral" style={{ marginLeft: 8 }}>{order.canteen}</span>
+                  )}
                 </div>
                 <span className={`badge ${statusBadgeClass[order.status] || ""}`}>
                   {order.status}
@@ -87,12 +77,9 @@ export default function StaffOrders() {
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
                 {STATUSES.map(s => (
-                  <button
-                    key={s}
-                    onClick={() => updateStatus(order.id, s)}
+                  <button key={s} onClick={() => updateStatus(order.id, s)}
                     className={order.status === s ? "btn-primary" : "btn-secondary"}
-                    style={{ fontSize: 13, padding: "7px 14px" }}
-                  >
+                    style={{ fontSize: 13, padding: "7px 14px" }}>
                     {s}
                   </button>
                 ))}

@@ -1,10 +1,6 @@
-// frontend/src/pages/Wallet.jsx
-
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Navbar from "../components/Navbar";
-
-const API_BASE = "http://localhost:5000/api";
+import API from "../services/api";
 
 function Wallet() {
   const [balance, setBalance] = useState(null);
@@ -12,23 +8,15 @@ function Wallet() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    fetchWalletData();
-  }, []);
+  useEffect(() => { fetchWalletData(); }, []);
 
   const fetchWalletData = async () => {
     setLoading(true);
     setError("");
     try {
       const [balanceRes, txRes] = await Promise.all([
-        axios.get(`${API_BASE}/wallet/balance`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get(`${API_BASE}/wallet/transactions`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        API.get('/wallet/balance'),
+        API.get('/wallet/transactions'),
       ]);
       setBalance(balanceRes.data.balance);
       setTransactions(txRes.data);
@@ -59,14 +47,7 @@ function Wallet() {
 
         {error && <p className="text-danger" style={{ marginBottom: 16 }}>{error}</p>}
 
-        <div
-          className="card"
-          style={{
-            background: "var(--canteen-accent)",
-            color: "#fff",
-            border: "none",
-          }}
-        >
+        <div className="card" style={{ background: "var(--canteen-accent)", color: "#fff", border: "none" }}>
           <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.85, margin: 0 }}>
             Current balance
           </p>
@@ -81,9 +62,7 @@ function Wallet() {
         <p className="card-label" style={{ margin: "24px 0 10px" }}>Transaction history</p>
 
         {transactions.length === 0 ? (
-          <div className="card">
-            <p className="text-muted">No transactions yet.</p>
-          </div>
+          <div className="card"><p className="text-muted">No transactions yet.</p></div>
         ) : (
           <table className="canteen-table">
             <thead>
