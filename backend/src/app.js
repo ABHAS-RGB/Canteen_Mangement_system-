@@ -11,23 +11,9 @@ const walletRoutes = require("./routes/walletRoutes");
 
 const app = express();
 
-// CORS — allow localhost in dev, Vercel URL in production
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:4173",
-  process.env.FRONTEND_URL, // set this in Render env vars once you have your Vercel URL
-].filter(Boolean); // removes undefined if FRONTEND_URL not set yet
-
+// Allow ALL origins temporarily to debug if the issue is in the code or infrastructure
 app.use(cors({
-  origin: (origin, callback) => {
-    // allow requests with no origin (Postman, mobile apps, curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Allow any vercel.app domain for preview deployments
-    if (origin.endsWith('.vercel.app')) return callback(null, true);
-    
-    callback(new Error(`CORS blocked: ${origin}`));
-  },
+  origin: true, // true means it will reflect the origin of the request, allowing anything
   credentials: true,
 }));
 
